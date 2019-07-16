@@ -8,10 +8,10 @@ ENV JAVA_OPTS="" \
     JAR_FILE=${JAR_FILE}
 
 #设置时区
-RUN echo "http://mirrors.aliyun.com/alpine/v3.4/main/" > /etc/apk/repositories \
-    && apk --no-cache add tzdata zeromq \
-    && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo '$TZ' > /etc/timezone
+RUN apk update && apk add ca-certificates && \
+    apk add tzdata && \
+    ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    echo "Asia/Shanghai" > /etc/timezone
 
 COPY target/$JAR_FILE $WORK_PATH/
 
