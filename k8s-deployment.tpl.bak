@@ -22,3 +22,20 @@ spec:
         env:
           - name: SPRING_PROFILES_ACTIVE
             value: {SPRING_PROFILE}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-jar
+  namespace: default
+  annotations: 
+    kubernets.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: pipeline.k8s.local
+    http:
+      paths:
+      - path: 
+        backend:
+          serviceName: jar
+          servicePort: 40080
