@@ -16,7 +16,7 @@ pipeline {
         stage('Maven Build') {
             when { expression { env.GIT_TAG != null } }
             agent {
-                sudo docker {
+                docker {
                     image 'maven:3-jdk-8-alpine'
                     args '-v $HOME/.m2:/root/.m2'
                 }
@@ -50,7 +50,7 @@ pipeline {
                 }
             }
             agent {
-                sudo docker {
+                docker {
                     image 'lwolf/helm-kubectl-docker'
                 }
             }
