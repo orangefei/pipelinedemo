@@ -27,7 +27,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ingress-jar
-  namespace: demo
+  namespace: uat
   annotations: 
     kubernets.io/ingress.class: "nginx"
 spec:
