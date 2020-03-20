@@ -9,7 +9,7 @@ pipeline {
         string(name: 'DOCKER_IMAGE_TAG', defaultValue: '0.3', description: 'tag版本')
         string(name: 'APP_NAME', defaultValue: 'edp-fss', description: 'k8s中标签名')
         string(name: 'K8S_NAMESPACE', defaultValue: 'dev', description: 'k8s的namespace名称')
-        string(name: 'GIT_URL', defaultValue: 'http://bitbucket.crfchina.com/scm/edp/edp_fss.git', description: '源码地址')
+        string(name: 'GIT_URL', defaultValue: 'http://bitbucket.xrf.com/scm/edp/edp_fss.git', description: '源码地址')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '分支')
         string(name: 'DEPLOY_SCRIPTS_WS', defaultValue: '/home/jenkins/deploy/template', description: '部署脚本工作空间')
         string(name: 'DEPLOY_REPLICAS', defaultValue: '2', description: '副本数')

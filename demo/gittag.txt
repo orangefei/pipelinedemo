@@ -9,7 +9,7 @@ pipeline {
         string(name: 'DOCKER_IMAGE', defaultValue: 'edp166/edp-cls', description: 'docker镜像名')
         string(name: 'APP_NAME', defaultValue: 'edp-cls', description: 'k8s中标签名')
         string(name: 'K8S_NAMESPACE', defaultValue: 'ci', description: 'k8s的namespace名称')
-        string(name: 'GIT_URL', defaultValue: 'http://bitbucket.crfchina.com/scm/edp/edp_cls.git', description: '源码地址')
+        string(name: 'GIT_URL', defaultValue: 'http://bitbucket.xrf.com/scm/edp/edp_cls.git', description: '源码地址')
         string(name: 'BRANCH_NAME', defaultValue: 'master', description: '分支')
         string(name: 'DEPLOY_SCRIPTS_WS', defaultValue: '/home/jenkins/deploy/template/test/', description: '部署脚本工作空间')
         string(name: 'DEPLOY_REPLICAS', defaultValue: '2', description: '副本数')
