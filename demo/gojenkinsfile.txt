@@ -1,0 +1,45 @@
+pipeline {
+    agent {label 'jenkins-golang'}
+    environment {
+        HARBOR_CREDS = credentials('aliyun-registry')
+    }
+    parameters {
+        string(name: 'HARBOR_HOST', defaultValue: 'registry.cn-shenzhen.aliyuncs.com', description: 'harbor仓库地址')
+        string(name: 'DOCKER_IMAGE', defaultValue: 'edp166/edp-fss', description: 'docker镜像名')
+        string(name: 'DOCKER_IMAGE_TAG', defaultValue: '0.3', description: 'tag版本')
+        string(name: 'APP_NAME', defaultValue: 'edp-fss', description: 'k8s中标签名')
+        string(name: 'K8S_NAMESPACE', defaultValue: 'dev', description: 'k8s的namespace名称')
+        string(name: 'GIT_URL', defaultValue: 'http://bitbucket.crfchina.com/scm/edp/edp_fss.git', description: '源码地址')
+        string(name: 'BRANCH_NAME', defaultValue: 'master', description: '分支')
+        string(name: 'DEPLOY_SCRIPTS_WS', defaultValue: '/home/jenkins/deploy/template', description: '部署脚本工作空间')
+        string(name: 'DEPLOY_REPLICAS', defaultValue: '2', description: '副本数')
+        string(name: 'APPYAML_CONFIGMAP', defaultValue: 'edp-fss-application-yaml', description: '配置文件configmap名称')
+    }
+    stages {
+        stage('Source Checkout') {
+            steps {
+                git credentialsId: 'BITBUCKET_ACCOUNT', branch: "${params.BRANCH_NAME}", url: "${params.GIT_URL}"
+            }
+        }
+        stage('Golang Build') {
+            steps {
+                sh "GOPROXY=https://goproxy.io GOPATH=/home/jenkins/workspce CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build"
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh "docker login -u ${HARBOR_CREDS_USR} -p ${HARBOR_CREDS_PSW} ${params.HARBOR_HOST}"
+                sh "docker build -t ${params.HARBOR_HOST}/${params.DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG} ."
+                sh "docker push ${params.HARBOR_HOST}/${params.DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}"
+                sh "docker rmi ${params.HARBOR_HOST}/${params.DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}"
+            }
+        }
+        stage('Deploy') {
+            steps {
+            	sh "mkdir -p ${params.DEPLOY_SCRIPTS_WS}/build/${params.APP_NAME}"
+                sh "sed -e 's#{DEPLOY_NAMESPACE}#${params.K8S_NAMESPACE}#g;s#{APP_NAME}#${params.APP_NAME}#g;s#{DEPLOY_REPLICAS}#${params.DEPLOY_REPLICAS}#g;s#{DOCKER_IMAGE}#${params.HARBOR_HOST}/${params.DOCKER_IMAGE}:${params.DOCKER_IMAGE_TAG}#g;s#{APP_CONFIG_FILE}#${params.APPYAML_CONFIGMAP}#g;' ${params.DEPLOY_SCRIPTS_WS}/deploy.tpl > ${params.DEPLOY_SCRIPTS_WS}/build/${params.APP_NAME}/deploy.yaml"
+                sh "kubectl apply -f ${params.DEPLOY_SCRIPTS_WS}/build/${params.APP_NAME}/deploy.yaml"
+            }
+        }
+    }
+}
