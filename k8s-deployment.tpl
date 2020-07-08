@@ -32,7 +32,7 @@ metadata:
     kubernets.io/ingress.class: "nginx"
 spec:
   rules:
-  - host: pipeline.k8s.local
+  - host: demojob.local.host
     http:
       paths:
       - path: 
